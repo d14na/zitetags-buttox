@@ -1,0 +1,12 @@
+{
+  "name": "zitetags-buttox",
+  "version": "18.7.19",
+  "description": "Backend for the Zitetags registration system.",
+  "main": "index.js",
+  "repository": "git@github.com:d14na/zitetags-buttox.git",
+  "author": "D14na <support@d14na.org>",
+  "license": "MIT",
+  "scripts": {
+    "test": "mocha"
+  }
+}

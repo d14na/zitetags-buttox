@@ -11,5 +11,9 @@
   },
   "devDependencies": {
     "mocha": "^5.2.0"
+  },
+  "dependencies": {
+    "express": "^4.16.4",
+    "namecoin-rpc": "^2.1.2"
   }
 }

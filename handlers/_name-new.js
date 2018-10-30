@@ -4,7 +4,31 @@ const util = require('util')
 const execFile = util.promisify(require('child_process').execFile)
 
 /* Initialize handler. */
-const handler = async function (_req, _res, _db, _logger) {
+const handler = async function (_req, _res, _profilesDb, _zitetagsDb, _logger) {
+    /* Set headers. */
+    const headers = _req.headers
+
+    let authKey = headers['x-0net-auth-key']
+    let publicKey = headers['x-0net-public-key']
+
+    // TODO Search profiles database for matching record WITH ADMIN usertype.
+
+    /* Hanlde "simple" authorization. */
+    // FIXME `auth_key` is DEPRECATED in Core, replace with Pub/Priv key auth.
+    if ('GUEST' !== 'ADMIN') {
+        /* Set error package. */
+        const pkg = {
+            error: 'ERROR TESTING!!!',
+            code: 401,
+            message: 'User is NOT authorized to perform this action.',
+            // headers,
+            authKey,
+            publicKey
+        }
+
+        return _res.json(pkg)
+    }
+
     /* Set tag. */
     let tag = _req.params.tag
 
@@ -53,7 +77,7 @@ const handler = async function (_req, _res, _db, _logger) {
                 /* Set db entry. */
                 const entry = { _id, nameNew, isCompleted, dateAdded }
 
-                _db.put(entry, function (_err, _result) {
+                _zitetagsDb.put(entry, function (_err, _result) {
                     if (_err) {
                         return _logger.error('ERROR saving to database', _err)
                     }

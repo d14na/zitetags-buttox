@@ -67,6 +67,9 @@ const handler = async function (_req, _res, _db, _logger) {
             /* Update doc completed status. */
             doc['isCompleted'] = true
 
+            /* Set first update. */
+            doc['firstUpdate'] = new Date().toISOString()
+
             _db.put(doc, function (_err, _result) {
                 if (_err) {
                     return _logger.error('ERROR updating database', _err)

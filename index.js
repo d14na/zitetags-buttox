@@ -14,6 +14,7 @@ const nameFirstupdate = require('./handlers/_name-firstupdate.js')
 const nameNew = require('./handlers/_name-new.js')
 const nameShow = require('./handlers/_name-show.js')
 const profileAdd = require('./handlers/_profile-add.js')
+const profileInfo = require('./handlers/_profile-info.js')
 const status = require('./handlers/_status.js')
 
 const app = express()
@@ -55,7 +56,9 @@ if (process.env.NODE_ENV !== 'production') {
 
 app.use(function (req, res, next) {
     res.header('Access-Control-Allow-Origin', '*')
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
+    res.header('Access-Control-Allow-Headers',
+        'Origin, X-Requested-With, Content-Type, Accept, ' +
+        'X-0net-Auth-Key, X-0net-Public-Key')
 
     next()
 })
@@ -99,7 +102,8 @@ app.get('/zitetags', async (_req, _res) => {
     const docs = await zitetags.allDocs(options)
         .catch(_err => logger.error(_err))
 
-    _res.send(`<pre>${JSON.stringify(docs, null, 4)}</pre>`)
+    _res.json(docs)
+    // _res.send(`<pre>${JSON.stringify(docs, null, 4)}</pre>`)
 })
 
 /**
@@ -110,16 +114,16 @@ app.get('/zitetags', async (_req, _res) => {
 app.get('/profile-add/:profileId/:publicKey', (_req, _res) => profileAdd (_req, _res, profiles, logger))
 
 /**
- * Retrieve Profile
+ * Retrieve Profile Info
  */
-// app.get('/profile/:profileId', (_req, _res) => profileInfo (_req, _res, profiles, logger))
+app.get('/profile/:publicKey', (_req, _res) => profileInfo (_req, _res, profiles, logger))
 
 /**
  * Command: NAME_NEW
  *
  * FIXME: Change to PUT
  */
-app.get('/name-new/d/:tag', (_req, _res) => nameNew (_req, _res, zitetags, logger))
+app.get('/name-new/d/:tag', (_req, _res) => nameNew (_req, _res, profiles, zitetags, logger))
 
 /**
  * Command: NAME_FIRSTUPDATE

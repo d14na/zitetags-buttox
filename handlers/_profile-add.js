@@ -1,5 +1,3 @@
-const util = require('util')
-
 /* Initialize handler. */
 const handler = async function (_req, _res, _db, _logger) {
     /* Set profile id. */

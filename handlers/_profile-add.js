@@ -1,5 +1,9 @@
 /* Initialize handler. */
 const handler = async function (_req, _res, _db, _logger) {
+    return res.json({
+        error: 'Offline.'
+    })
+
     /* Set profile id. */
     let profileId = _req.params.profileId
 

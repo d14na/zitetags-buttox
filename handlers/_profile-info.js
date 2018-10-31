@@ -1,13 +1,5 @@
-/* Initialize vendor libraries. */
-const crypto = require('crypto')
-
-/**
- * Calculate Hash
- */
-const _calcHash = function (_data) {
-    /* Compute the SHA-1 hash of the data provided. */
-    return crypto.createHash('sha1').update(_data).digest('hex')
-}
+/* Require local libs. */
+const _utils = require('../libs/_utils')
 
 /* Initialize handler. */
 const handler = async function (_req, _res, _db, _logger) {
@@ -33,7 +25,7 @@ const handler = async function (_req, _res, _db, _logger) {
 
         _logger.info(doc)
 
-        let authHash = _req['headers']['x-0net-auth-key'] ? _calcHash(_req['headers']['x-0net-auth-key']) : null
+        let authHash = _req['headers']['x-0net-auth-key'] ? _utils.calcHash(_req['headers']['x-0net-auth-key']) : null
         let publicKey = _req['headers']['x-0net-public-key']
 
         /* Send back document. */

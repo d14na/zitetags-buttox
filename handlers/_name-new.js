@@ -1,5 +1,8 @@
 const util = require('util')
 
+/* Require local libs. */
+const _utils = require('../libs/_utils')
+
 /* Initialize file execution. */
 const execFile = util.promisify(require('child_process').execFile)
 
@@ -8,17 +11,57 @@ const handler = async function (_req, _res, _profilesDb, _zitetagsDb, _logger) {
     /* Set headers. */
     const headers = _req.headers
 
+    /* Set auth key. */
+    // FIXME THIS IS DEPRECATED
     let authKey = headers['x-0net-auth-key']
+
+    /* Set public key. */
     let publicKey = headers['x-0net-public-key']
 
-    // TODO Search profiles database for matching record WITH ADMIN usertype.
+    /* Initialize user type. */
+    let userType = null
+
+    /* Initialize options. */
+    const options = {
+        key: publicKey,
+        include_docs: true,
+        descending: true
+    }
+
+    const docs = await _profilesDb.allDocs(options)
+        .catch(_err => _logger.error(_err))
+
+    /* Validate docs. */
+    if (docs && docs.rows.length) {
+        // /* Retrieve the doc recordset. */
+        const doc = docs.rows[0].doc
+
+        _logger.info(doc)
+
+        /* Set authorization hash. */
+        const authHash = doc.authHash
+
+        // console.log('AUTH HASH', authHash)
+        // console.log('CALC HASH', _utils.calcHash(authKey))
+
+        /* Validate authorization hash. */
+        if (authHash === _utils.calcHash(authKey)) {
+            /* Set user type. */
+            userType = doc.userType
+        } else {
+            /* Set error. */
+            const error = `Authentication failed for [ ${authKey} ]`
+
+            return _res.json({ error })
+        }
+    }
 
     /* Hanlde "simple" authorization. */
     // FIXME `auth_key` is DEPRECATED in Core, replace with Pub/Priv key auth.
-    if ('GUEST' !== 'ADMIN') {
+    if (userType !== 'ADMIN') {
         /* Set error package. */
         const pkg = {
-            error: 'ERROR TESTING!!!',
+            error: 'Authentication Error!',
             code: 401,
             message: 'User is NOT authorized to perform this action.',
             // headers,
